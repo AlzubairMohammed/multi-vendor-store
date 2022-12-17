@@ -1,0 +1,23 @@
+{
+    "development":{
+        "username":"root",
+        "password":"",
+        "datebase":"e_commerce",
+        "host":"localhost",
+        "dialect":"mysql"
+    },
+    "test":{
+        "username":"root",
+        "passwod":"",
+        "datebase":"e_commerce",
+        "host":"localhost",
+        "dialect":"mysql"
+    },
+    "production":{
+        "username":"root",
+        "password":"",
+        "datebase":"e_commerce",
+        "host":"localhost",
+        "dialect":"mysql"
+    }
+}
