@@ -5,7 +5,7 @@ import { HomePage } from './pages/Home/HomePage'
 
 export const App = () => {
   return (
-   <div>
+   <div className='font'>
      <NavBar /> 
      <BrowserRouter>
       <Routes>
