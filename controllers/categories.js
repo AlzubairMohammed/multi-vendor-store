@@ -18,9 +18,8 @@ exports.getCategory = async (req, res) => {
     const catgory = await Category.findOne({ where: { id }, include: ['sub_sections'] });
     res.status(200).json(catgory);
 }
-// create category
+// Create category
 exports.createCategory = async (req, res) => {
-    console.log(req);
     const { files } = req
     const { name } = req.body;
     let fileName = '';
@@ -35,7 +34,7 @@ exports.createCategory = async (req, res) => {
         name,
         image: fileName
     })
-    return res.json({ status: 'success', message: Object.keys(files).toString() + ' and product created' })
+    return res.status(200).json({ msg:'product created' })
 }
 // Update category
 exports.updateCategory = async (req, res, next) => {
@@ -53,7 +52,7 @@ exports.updateCategory = async (req, res, next) => {
             })
         }))
     try {
-        // delete old image form uploads directory
+        // Delete old image form uploads directory
         fs.unlinkSync(path.join(__dirname, `../uploads/${category.image}`))
     } catch (err) {
         return next(new ErrorResponse('old image not found', 404));
@@ -62,7 +61,7 @@ exports.updateCategory = async (req, res, next) => {
         { name, image: fileName },
         { where: { id } }
     )
-    res.status(200).json({ msg: `category ${category.name} updated` });
+    res.status(200).json({ msg: `category updated` });
 
 }
 // Delete category
@@ -71,10 +70,10 @@ exports.deleteCategory = async (req, res, next) => {
     let category = await Category.findOne({ where: { id } });
     if (category) (Category.destroy({ where: { id } }))
     try {
-        // delete old image form uploads directory
+        // Delete old image form uploads directory
         fs.unlinkSync(path.join(__dirname, `../uploads/${category.image}`))
     } catch (err) {
         return next(new ErrorResponse('old image not found', 404));
     }
-    res.status(200).json({ msg: `category ${category.name} deleted` });
+    res.status(200).json({ msg: `category deleted` });
 }
