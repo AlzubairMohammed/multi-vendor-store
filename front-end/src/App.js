@@ -9,7 +9,7 @@ export const App = () => {
      <NavBar /> 
      <BrowserRouter>
       <Routes>
-        <Route path='/home' element={<HomePage/>}/>
+        <Route index element={<HomePage/>}/>
       </Routes>
     </BrowserRouter>
    </div>
