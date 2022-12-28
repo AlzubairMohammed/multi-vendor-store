@@ -33,6 +33,7 @@ exports.createProdut = async (req, res, next) => {
         console.log(req.body);
         if (!name) (undefinedError.err = true, undefinedError.name = 'you must to add name')
         if (!price) (undefinedError.err = true, undefinedError.price = 'you must to add price')
+        if (!files) (undefinedError.err = true, undefinedError.qty = 'you must to add image')
         if (!qty) (undefinedError.err = true, undefinedError.qty = 'you must to add quntity')
         if (!user_id) (undefinedError.err = true, undefinedError.user_id = 'you must to select subcategory')
         if (!sub_section_id) (undefinedError.err = true, undefinedError.sub_section_id = 'you must to add quntity')

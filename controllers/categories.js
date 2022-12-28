@@ -13,10 +13,10 @@ exports.getCategories = (req, res) =>
             console.log(err);
         });
 // Get single category
-exports.getCategory = async (req, res) => {
+exports.getCategory = async (req, res, next) => {
     const id = req.params.id;
     const catgory = await Category.findOne({ where: { id }, include: ['sub_sections'] });
-    res.status(200).json(catgory);
+    catgory ? (res.status(200).json(catgory)) : (res.status(404).json({ msg: 'category not found' }))
 }
 // Create category
 exports.createCategory = async (req, res) => {
@@ -34,7 +34,7 @@ exports.createCategory = async (req, res) => {
         name,
         image: fileName
     })
-    return res.status(200).json({ msg:'product created' })
+    return res.status(200).json({ msg: 'product created' })
 }
 // Update category
 exports.updateCategory = async (req, res, next) => {
