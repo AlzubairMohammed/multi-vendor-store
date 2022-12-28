@@ -10,9 +10,9 @@ export const HomePage = () => {
     <div>
       <SliderShow />
       <Container className='mt-3'>
-      <ContainerMoreTitle name='المتاجر' btn='المزيد'/>
+      <ContainerMoreTitle onClick='' name='المتاجر' btn='المزيد'/>
         <ContentStore />
-        <ContainerMoreTitle name='الاكثر مبيعا' btn='المزيد'/>
+        <ContainerMoreTitle name='الاكثر مبيعا' btn='المزيد' url='/products'/>
         <ProductsBestSeller/>
       </Container>
     </div>
