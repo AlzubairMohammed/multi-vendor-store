@@ -8,7 +8,7 @@
     },
     "test":{
         "username":"root",
-        "passwod":"",
+        "passwod":"noPass123",
         "datebase":"e_commerce",
         "host":"localhost",
         "dialect":"mysql"

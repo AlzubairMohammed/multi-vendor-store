@@ -7,6 +7,8 @@ const categories = require('./routes/categories');
 const prodcuts = require('./routes/products');
 const subCategories = require('./routes/subCategories');
 const users = require('./routes/users');
+var path = require('path');
+
 
 
 app.use(express.json());
@@ -28,7 +30,10 @@ app.use(`${URL}/products/`, prodcuts);
 app.use(`${URL}/subCategories/`, subCategories);
 app.use(`${URL}/users/`, users);
 
-
+//this just for test
+app.get('/', function(req, res) {
+  res.sendFile(path.resolve('test.html'));
+});
 
 
 const PORT = process.env.PORT || 8000;
