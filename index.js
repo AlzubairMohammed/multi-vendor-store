@@ -34,7 +34,7 @@ app.use(`${URL}/users/`, users);
 app.get('/', function(req, res) {
   res.sendFile(path.resolve('dist/index.html'));
 });
-
+app.use(express.static("."));
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, async () => {
