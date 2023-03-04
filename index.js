@@ -32,7 +32,7 @@ app.use(`${URL}/users/`, users);
 
 //this just for test
 app.get('/', function(req, res) {
-  res.sendFile(path.resolve('test.html'));
+  res.sendFile(path.resolve('dist/index.html'));
 });
 
 

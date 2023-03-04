@@ -1,14 +1,14 @@
 {
     "development":{
         "username":"root",
-        "password":"",
+        "password":"noPass123",
         "datebase":"e_commerce",
         "host":"localhost",
         "dialect":"mysql"
     },
     "test":{
         "username":"root",
-        "passwod":"noPass123",
+        "passwod":"",
         "datebase":"e_commerce",
         "host":"localhost",
         "dialect":"mysql"
