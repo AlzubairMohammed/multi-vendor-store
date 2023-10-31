@@ -1,52 +1,24 @@
-const config = require('../config/env');
-const Sequelize = require('sequelize');
-
-const Model = Sequelize.Model;
-
-
-class Category extends  Model {};
-Category.init({
-    id:{
-        type:Sequelize.INTEGER,
-        primaryKey:true,
-        autoIncrement:true,
-        allowNull:false
-    },
-    name:{
-        type:Sequelize.STRING,
-        allowNull:false
-    },
-    image:{
-        type:Sequelize.STRING,
-        allowNull:false
-    },
-    created:{
-        type:Sequelize.DATE,
-        allowNull:false,
-        defaultValue:Sequelize.literal('CURRENT_TIMESTAMP')
-    },
-    updated:{
-        type:Sequelize.DATE,
-        allowNull:false,
-        defaultValue:Sequelize.literal('CURRENT_TIMESTAMP')
+'use strict';
+const {
+  Model
+} = require('sequelize');
+module.exports = (sequelize, DataTypes) => {
+  class Category extends Model {
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of Sequelize lifecycle.
+     * The `models/index` file will call this method automatically.
+     */
+    static associate(models) {
+      // define association here
     }
-},
-{
-    sequelize:config,
-    modelName:'Category',
-    freezeTableName:true,
-    tableName:'sections',
-    timestamps:false
-});
-
-Category.associate = ({SubCategory})=>{
-    Category.hasMany(SubCategory, {
-        foreignKey:'sections_id',
-        as:'sub_sections',
-        onDelete:'CASCATE',
-        onUpdate:'CASCATE'
-    })
-}
-
-
-module.exports = Category;
+  }
+  Category.init({
+    name: DataTypes.STRING,
+    image: DataTypes.STRING
+  }, {
+    sequelize,
+    modelName: 'Category',
+  });
+  return Category;
+};
