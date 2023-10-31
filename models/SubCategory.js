@@ -1,55 +1,25 @@
-const config = require('../config/env');
-const Sequelize = require('sequelize');
-const Product = require('./Product');
-const Model = Sequelize.Model;
-
-class SubCategory extends Model {};
-SubCategory.init({
-    id:{
-        type:Sequelize.INTEGER,
-        primaryKey:true,
-        autoIncrement:true,
-        allowNull:false
-    },
-    name:{
-        type:Sequelize.STRING,
-        allowNull:false
-    },
-    image:{
-        type:Sequelize.STRING,
-        allowNull:false
-    },
-    sections_id:{
-        type:Sequelize.INTEGER,
-        allowNull:false,
-        references: {
-            model: "Category",
-            key: "id",
-          },
-    },
-    createdAt:{
-        type:Sequelize.DATE,
-        allowNull:false,
-        defaultValue:Sequelize.literal('CURRENT_TIMESTAMP')
-    },
-    updatedAt:{
-        type:Sequelize.DATE,
-        allowNull:false,
-        defaultValue:Sequelize.literal('CURRENT_TIMESTAMP')
+'use strict';
+const {
+  Model
+} = require('sequelize');
+module.exports = (sequelize, DataTypes) => {
+  class SubCategory extends Model {
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of Sequelize lifecycle.
+     * The `models/index` file will call this method automatically.
+     */
+    static associate(models) {
+      // define association here
     }
-},{
-    sequelize:config,
-    modelName: "SubCategory",
-    freezeTableName: true,
-    tableName: "sub_sections",
-    timestamps: false,
-});
-
-SubCategory.associate = ({Product})=>{
-    SubCategory.hasMany(Product, {
-        foreignKey:'sub_section_id',
-        as:'product'
-    })
-}
-
-module.exports = SubCategory;
+  }
+  SubCategory.init({
+    name: DataTypes.STRING,
+    image: DataTypes.STRING,
+    category_id: DataTypes.INTEGER
+  }, {
+    sequelize,
+    modelName: 'SubCategory',
+  });
+  return SubCategory;
+};
