@@ -2,7 +2,7 @@ const sequelize = require("../config/env.js");
 const Sequelize = require("sequelize");
 const Model = Sequelize.Model;
 
-class Product extends Model {};
+class Product extends Model {}
 Product.init(
   {
     id: {
@@ -32,14 +32,13 @@ Product.init(
       },
     },
     sub_section_id: {
-      type:Sequelize.INTEGER,
-      allowNull:false,
-      references:{
-        model:'SubCategory',
-        key:'id'
-      }
-    }
-
+      type: Sequelize.INTEGER,
+      allowNull: false,
+      references: {
+        model: "SubCategory",
+        key: "id",
+      },
+    },
   },
   {
     sequelize,
@@ -50,13 +49,13 @@ Product.init(
   }
 );
 
-Product.associate = ({Image})=>{
+Product.associate = ({ Image }) => {
   Product.hasMany(Image, {
-      foreignKey:'product_id',
-      as:'images',
-      onDelete:'CASCADE',
-      onUpdate:'CASCADE'
+    foreignKey: "product_id",
+    as: "images",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
   });
-}
+};
 
 module.exports = Product;
