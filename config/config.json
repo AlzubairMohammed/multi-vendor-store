@@ -2,7 +2,7 @@
   "development": {
     "username": "root",
     "password": "noPass123",
-    "database": "e_commerce",
+    "database": "store_db",
     "host": "127.0.0.1",
     "dialect": "mysql"
   },
