@@ -29,7 +29,7 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
-      sub_section_id: {
+      sub_category_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
       },

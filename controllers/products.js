@@ -4,6 +4,7 @@ const fs = require("fs");
 const ErrorResponse = require("../utils/errorResponse");
 const asyncWrapper = require("../middleware/asyncWrapper");
 const httpStatus = require("../utils/httpStatus");
+const { validationResult } = require("express-validator");
 let fileName;
 // get all products function
 exports.getProducts = (req, res) => {
@@ -33,10 +34,13 @@ exports.getProduct = async (req, res) => {
 // create product funtion
 exports.createProdut = asyncWrapper(async (req, res, next) => {
   const errors = validationResult(req);
+  console.log(errors);
   if (!errors.isEmpty()) {
-    const error = appError.create(errors.array(), 400, httpStatus.FAIL);
+    const error = ErrorResponse.create(errors.array(), 400, httpStatus.FAIL);
     return next(error);
   }
+  Product.create(req);
+  return res.json({ status: httpStatus.SUCCESS, data: {} });
 });
 // update product function
 exports.updateProdcut = async (req, res, next) => {
