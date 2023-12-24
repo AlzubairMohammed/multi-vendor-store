@@ -31,6 +31,7 @@ router.put(
   filesPayloadExists,
   fileExtLimiter([".png", ".jpg", ".jpeg"]),
   fileSizeLimiter,
+  subCategoryValidation(),
   updateSubCategory
 );
 router.delete("/:id", deleteSubCategory);
