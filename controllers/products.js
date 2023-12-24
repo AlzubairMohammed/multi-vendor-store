@@ -39,8 +39,9 @@ exports.createProdut = asyncWrapper(async (req, res, next) => {
     const error = ErrorResponse.create(errors.array(), 400, httpStatus.FAIL);
     return next(error);
   }
-  Product.create(req);
-  return res.json({ status: httpStatus.SUCCESS, data: {} });
+  console.log(req.body);
+  const data = await Product.create(req.body);
+  return res.json({ status: httpStatus.SUCCESS, data: data });
 });
 // update product function
 exports.updateProdcut = async (req, res, next) => {
