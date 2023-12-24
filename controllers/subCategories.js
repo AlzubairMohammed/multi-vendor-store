@@ -39,6 +39,7 @@ exports.createSubCategory = asyncWrapper(async (req, res, next) => {
       }
     });
   });
+  req.body.image = fileName;
   const data = await SubCategory.create(req.body);
   return res.json({ status: httpStatus.SUCCESS, data });
 });

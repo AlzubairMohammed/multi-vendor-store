@@ -11,12 +11,15 @@ module.exports = {
       },
       name: {
         type: Sequelize.STRING,
+        allowNull: false,
       },
       image: {
         type: Sequelize.STRING,
+        allowNull: false,
       },
       category_id: {
         type: Sequelize.INTEGER,
+        allowNull: false,
       },
       created_at: {
         allowNull: false,
