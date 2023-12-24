@@ -2,6 +2,10 @@ const SubCategory = require("../models");
 const path = require("path");
 const fs = require("fs");
 let fileName;
+const { validationResult } = require("express-validator");
+const ErrorResponse = require("../utils/errorResponse");
+const asyncWrapper = require("../middleware/asyncWrapper");
+const httpStatus = require("../utils/httpStatus");
 
 exports.getSubCategories = (req, res) => {
   SubCategory.findAll({
@@ -15,44 +19,31 @@ exports.getSubCategories = (req, res) => {
     });
 };
 
-exports.getSubCategory = async (req, res) => {
+exports.getSubCategory = asyncWrapper(async (req, res) => {
   const id = req.params.id;
   const subCategory = await SubCategory.findOne({ where: { id } });
   console.log(subCategory);
   subCategory
     ? res.status(200).json(subCategory)
     : res.status(404).json({ msg: "subcategory not found" });
-};
+});
 
-exports.createSubCategory = (req, res) => {
-  const { name, sections_id } = req.body;
-  const { files } = req;
-  const undefinedError = {};
-  if (!name)
-    (undefinedError.err = true), (undefinedError.name = "you must to add name");
-  if (!files)
-    (undefinedError.err = true),
-      (undefinedError.name = "you must to add image");
-  if (!sections_id)
-    (undefinedError.err = true),
-      (undefinedError.name = "you must to add section");
-  if (undefinedError.err) return res.status(404).json(undefinedError);
+exports.createSubCategory = asyncWrapper(async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const error = ErrorResponse.create(errors.array(), 400, httpStatus.FAIL);
+    return next(error);
+  }
   Object.keys(files).forEach((key) => {
     fileName = Date.now() + files[key].name + "";
     const filepath = path.join(__dirname, "../uploads", fileName);
-    files[key].mv(filepath, (err) => {
-      if (err) return res.status(500).json({ status: "error", message: err });
+    files[key].mv(filepath, (error) => {
+      if (error) return next(error);
     });
   });
-  const subCategory = SubCategory.create({
-    name,
-    image: fileName,
-    sections_id,
-  });
-  subCategory
-    ? res.status(200).json({ msg: "subcategory created" })
-    : res.status(500);
-};
+  const data = await SubCategory.create(req.body);
+  return res.json({ status: httpStatus.SUCCESS, data: data });
+});
 
 exports.updateSubCategory = (req, res) => {
   const { name, sections_id } = req.body;
