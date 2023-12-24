@@ -34,12 +34,10 @@ exports.getProduct = async (req, res) => {
 // create product funtion
 exports.createProdut = asyncWrapper(async (req, res, next) => {
   const errors = validationResult(req);
-  console.log(errors);
   if (!errors.isEmpty()) {
     const error = ErrorResponse.create(errors.array(), 400, httpStatus.FAIL);
     return next(error);
   }
-  console.log(req.body);
   const data = await Product.create(req.body);
   return res.json({ status: httpStatus.SUCCESS, data: data });
 });

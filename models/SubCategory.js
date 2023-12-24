@@ -20,6 +20,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "SubCategory",
+      timestamps: false,
     }
   );
   return SubCategory;

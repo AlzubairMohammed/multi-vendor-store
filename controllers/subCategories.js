@@ -1,8 +1,9 @@
-const SubCategory = require("../models");
+const { SubCategory } = require("../models");
 const path = require("path");
 const fs = require("fs");
 let fileName;
 const { validationResult } = require("express-validator");
+const x = require("express-validator");
 const ErrorResponse = require("../utils/errorResponse");
 const asyncWrapper = require("../middleware/asyncWrapper");
 const httpStatus = require("../utils/httpStatus");
@@ -28,8 +29,9 @@ exports.getSubCategory = asyncWrapper(async (req, res) => {
     : res.status(404).json({ msg: "subcategory not found" });
 });
 
-exports.createSubCategory = asyncWrapper(async (req, res) => {
+exports.createSubCategory = asyncWrapper(async (req, res, next) => {
   const errors = validationResult(req);
+  const { files } = req;
   if (!errors.isEmpty()) {
     const error = ErrorResponse.create(errors.array(), 400, httpStatus.FAIL);
     return next(error);
@@ -37,8 +39,11 @@ exports.createSubCategory = asyncWrapper(async (req, res) => {
   Object.keys(files).forEach((key) => {
     fileName = Date.now() + files[key].name + "";
     const filepath = path.join(__dirname, "../uploads", fileName);
-    files[key].mv(filepath, (error) => {
-      if (error) return next(error);
+    files[key].mv(filepath, (err) => {
+      if (err) {
+        const error = ErrorResponse.create(err, 400, httpStatus.FAIL);
+        return next(error);
+      }
     });
   });
   const data = await SubCategory.create(req.body);
