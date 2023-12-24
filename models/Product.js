@@ -9,6 +9,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       Product.belongsTo(models.Category);
+      Product.belongsTo(models.User);
       Product.hasMany(models.Image);
     }
   }
@@ -18,6 +19,8 @@ module.exports = (sequelize, DataTypes) => {
       email: DataTypes.STRING,
       price: DataTypes.FLOAT,
       qty: DataTypes.INTEGER,
+      user_id: DataTypes.INTEGER,
+      sub_category_id: DataTypes.INTEGER,
     },
     {
       sequelize,
