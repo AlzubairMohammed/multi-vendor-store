@@ -13,13 +13,18 @@ exports.getSubCategories = asyncWrapper(async (req, res, next) => {
   return res.json({ status: httpStatus.SUCCESS, data });
 });
 
-exports.getSubCategory = asyncWrapper(async (req, res) => {
+exports.getSubCategory = asyncWrapper(async (req, res, next) => {
   const id = req.params.id;
-  const subCategory = await SubCategory.findOne({ where: { id } });
-  console.log(subCategory);
-  subCategory
-    ? res.status(200).json(subCategory)
-    : res.status(404).json({ msg: "subcategory not found" });
+  const data = await SubCategory.findOne({ where: { id } });
+  if (!data) {
+    const error = ErrorResponse.create(
+      `subcategory with id = ${id} is not found`,
+      404,
+      httpStatus.FAIL
+    );
+    return next(error);
+  }
+  return res.json({ status: httpStatus.SUCCESS, data });
 });
 
 exports.createSubCategory = asyncWrapper(async (req, res, next) => {
