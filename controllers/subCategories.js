@@ -8,17 +8,10 @@ const ErrorResponse = require("../utils/errorResponse");
 const asyncWrapper = require("../middleware/asyncWrapper");
 const httpStatus = require("../utils/httpStatus");
 
-exports.getSubCategories = (req, res) => {
-  SubCategory.findAll({
-    include: ["product"],
-  })
-    .then((result) => {
-      res.json(result);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-};
+exports.getSubCategories = asyncWrapper(async (req, res, next) => {
+  const data = await SubCategory.findAll();
+  return res.json({ status: httpStatus.SUCCESS, data });
+});
 
 exports.getSubCategory = asyncWrapper(async (req, res) => {
   const id = req.params.id;
@@ -47,7 +40,7 @@ exports.createSubCategory = asyncWrapper(async (req, res, next) => {
     });
   });
   const data = await SubCategory.create(req.body);
-  return res.json({ status: httpStatus.SUCCESS, data: data });
+  return res.json({ status: httpStatus.SUCCESS, data });
 });
 
 exports.updateSubCategory = (req, res) => {
