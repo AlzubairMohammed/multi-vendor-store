@@ -1,47 +1,25 @@
-const config = require("../config/env");
-const Sequelize = require("sequelize");
-
-const Model = Sequelize.Model;
-
-class Image extends Model {}
-Image.init(
-  {
-    id: {
-      type: Sequelize.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-      allowNull: false,
-    },
-    image: {
-      type: Sequelize.STRING(255),
-      allowNull: false,
-    },
-    product_id: {
-      type: Sequelize.INTEGER,
-      allowNull: false,
-      references: {
-        model: "Product",
-        key: "id",
-      },
-    },
-    created: {
-      type: Sequelize.DATE,
-      allowNull: false,
-      defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
-    },
-    updated: {
-      type: Sequelize.DATE,
-      allowNull: false,
-      defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
-    },
-  },
-  {
-    sequelize: config,
-    modelName: "Image",
-    freezeTableName: true,
-    tableName: "images",
-    timestamps: false,
+"use strict";
+const { Model } = require("sequelize");
+module.exports = (sequelize, DataTypes) => {
+  class Image extends Model {
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of Sequelize lifecycle.
+     * The `models/index` file will call this method automatically.
+     */
+    static associate(models) {
+      Image.belongsTo(models.Product);
+    }
   }
-);
-
-module.exports = Image;
+  Image.init(
+    {
+      image: DataTypes.STRING,
+      product_id: DataTypes.INTEGER,
+    },
+    {
+      sequelize,
+      modelName: "Image",
+    }
+  );
+  return Image;
+};

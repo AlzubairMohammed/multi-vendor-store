@@ -1,27 +1,25 @@
-const express = require('express');
+const express = require("express");
 const app = express();
-require('dotenv').config();
+require("dotenv").config();
 const { sequelize } = require("./models");
-const auth = require('./routes/auth');
-const categories = require('./routes/categories');
-const prodcuts = require('./routes/products');
-const subCategories = require('./routes/subCategories');
-const users = require('./routes/users');
-var path = require('path');
-
-
+const auth = require("./routes/auth");
+const categories = require("./routes/categories");
+const prodcuts = require("./routes/products");
+const subCategories = require("./routes/subCategories");
+const users = require("./routes/users");
+var path = require("path");
+const httpStatus = require("./utils/httpStatus");
 
 app.use(express.json());
 
-const cors = require('cors');
+const cors = require("cors");
 app.use(
   cors({
     origin: "*",
   })
 );
 
-const db = require('./models/');
-
+const db = require("./models/");
 
 const URL = process.env.ROUTES_URL;
 app.use(`${URL}/auth/`, auth);
@@ -31,17 +29,23 @@ app.use(`${URL}/subCategories/`, subCategories);
 app.use(`${URL}/users/`, users);
 
 //this just for test
-app.get('/', function(req, res) {
-  res.sendFile(path.resolve('dist/index.html'));
+app.get("/", function (req, res) {
+  res.sendFile(path.resolve("dist/index.html"));
 });
 app.use(express.static("."));
+// global error handler
+app.use((error, req, res, next) => {
+  res.status(error.statusCode || 500).json({
+    status: error.statusText || httpStatus.ERROR,
+    message: error.message,
+    code: error.statusCode || 500,
+    data: null,
+  });
+});
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, async () => {
   console.log(`app running at ${PORT}`);
   await sequelize.authenticate();
   console.log("Database connected ...");
-
-})
-
-
+});
