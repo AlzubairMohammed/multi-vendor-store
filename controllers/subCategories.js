@@ -9,7 +9,7 @@ const asyncWrapper = require("../middleware/asyncWrapper");
 const httpStatus = require("../utils/httpStatus");
 
 exports.getSubCategories = asyncWrapper(async (req, res, next) => {
-  const data = await SubCategory.findAll();
+  const data = await SubCategory.findAll({ include: ["Products"] });
   return res.json({ status: httpStatus.SUCCESS, data });
 });
 

@@ -7,19 +7,12 @@ const httpStatus = require("../utils/httpStatus");
 const { validationResult } = require("express-validator");
 let fileName;
 // get all products function
-exports.getProducts = (req, res) => {
-  console.log(Product);
-  const data = Product.findAll({
-    include: ["images"],
-  })
-    .then((result) => {
-      res.json(result);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-  res.json(data);
-};
+exports.getProducts = asyncWrapper(async (req, res) => {
+  const data = await Product.findAll({
+    // include: ["images"],
+  });
+  res.json({ status: httpStatus.SUCCESS, data });
+});
 // get single product function
 exports.getProduct = async (req, res) => {
   const id = req.params.id;
