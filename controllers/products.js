@@ -16,13 +16,8 @@ exports.getProducts = asyncWrapper(async (req, res) => {
 // get single product function
 exports.getProduct = async (req, res) => {
   const id = req.params.id;
-  const product = await Product.findOne({ where: { id }, include: ["images"] })
-    .then((result) => {
-      res.status(200).json(result);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+  const data = await Product.findOne({ where: { id } });
+  res.json({ status: httpStatus.SUCCESS, data });
 };
 // create product funtion
 exports.createProdut = asyncWrapper(async (req, res, next) => {
