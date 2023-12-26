@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      SubCategory.hasMany(models.Product);
+      SubCategory.hasMany(models.Product, { foreignKey: "sub_category_id" });
       SubCategory.belongsTo(models.Category, { foreignKey: "category_id" });
     }
   }
@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       name: DataTypes.STRING,
       image: DataTypes.STRING,
+      category_id: DataTypes.INTEGER,
     },
     {
       sequelize,

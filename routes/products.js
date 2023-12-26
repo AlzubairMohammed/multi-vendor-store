@@ -16,10 +16,10 @@ router
   .get("/", getProducts)
   .post(
     "/",
-    // fileUpload({ createParentPath: true }),
-    // filesPayloadExists,
-    // fileExtLimiter(['.png', '.jpg', '.jpeg']),
-    // fileSizeLimiter,
+    fileUpload({ createParentPath: true }),
+    filesPayloadExists,
+    fileExtLimiter([".png", ".jpg", ".jpeg"]),
+    fileSizeLimiter,
     productsValidation(),
     createProdut
   )
