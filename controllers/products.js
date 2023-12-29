@@ -6,30 +6,52 @@ const asyncWrapper = require("../middleware/asyncWrapper");
 const httpStatus = require("../utils/httpStatus");
 const { validationResult } = require("express-validator");
 let fileName;
-// get all products function
 exports.getProducts = asyncWrapper(async (req, res) => {
   const data = await Product.findAll({
-    // include: ["images"],
+    include: ["images"],
   });
-  res.json({ status: httpStatus.SUCCESS, data });
+  return res.json({ status: httpStatus.SUCCESS, data });
 });
-// get single product function
-exports.getProduct = async (req, res) => {
+
+exports.getProduct = async (req, res, next) => {
   const id = req.params.id;
   const data = await Product.findOne({ where: { id } });
-  res.json({ status: httpStatus.SUCCESS, data });
+  if (!data) {
+    const error = ErrorResponse.create(
+      "product not found",
+      404,
+      httpStatus.FAIL
+    );
+    next(error);
+  }
+  return res.json({ status: httpStatus.SUCCESS, data });
 };
-// create product funtion
+
 exports.createProdut = asyncWrapper(async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const error = ErrorResponse.create(errors.array(), 400, httpStatus.FAIL);
     return next(error);
   }
+  const { files } = req;
+  let fileName = "";
+  Object.keys(files).forEach((key) => {
+    fileName = Date.now() + files[key].name + "";
+    const filepath = path.join(__dirname, "../uploads", fileName);
+    files[key].mv(filepath, (err) => {
+      if (err) {
+        const error = ErrorResponse.create(err, 500, httpStatus.FAIL);
+        return next(error);
+      }
+    });
+  });
   const data = await Product.create(req.body);
-  return res.json({ status: httpStatus.SUCCESS, data: data });
+  const imageDate = Image.create({ image: fileName, product_id: data.id });
+  if (data && imageDate) {
+    return res.json({ status: httpStatus.SUCCESS, data });
+  }
 });
-// update product function
+
 exports.updateProdcut = async (req, res, next) => {
   const id = req.params.id;
   const { files } = req;
@@ -85,30 +107,31 @@ exports.updateProdcut = async (req, res, next) => {
   }
   res.status(200).json("updated");
 };
-// delete product function
+
 exports.deleteProduct = async (req, res, next) => {
   const id = req.params.id;
-  const newImage = await Image.findOne({
+  const { image } = await Image.findOne({
     where: { product_id: id },
   });
   // Delete old image form uploads directory
-  fs.unlinkSync(path.join(__dirname, `../uploads/${newImage.image}`));
+  fs.unlinkSync(path.join(__dirname, `../uploads/${image}`));
   Object.keys(files).forEach((key) => {
     fileName = Date.now() + files[key].name + "";
     const filepath = path.join(__dirname, "../uploads", fileName);
     files[key].mv(filepath, (err) => {
-      if (err) return res.status(500).json({ status: "error", message: err });
+      if (err) {
+        const error = ErrorResponse.create(err, 500, httpStatus.FAIL);
+        next(error);
+      }
     });
   });
-  const image = Image.destroy({
+  const imageData = Image.destroy({
     where: { product_id: id },
   });
   const product = await Product.destroy({
     where: { id },
   });
   if (product && image) {
-    res.json({ msg: `product deleted` });
-  } else {
-    return next(new ErrorResponse());
+    res.json({ status: httpStatus.SUCCESS, data: `product deleted` });
   }
 };
