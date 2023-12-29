@@ -2,7 +2,6 @@ const express = require("express");
 const app = express();
 require("dotenv").config();
 const { sequelize } = require("./models");
-const auth = require("./routes/auth");
 const categories = require("./routes/categories");
 const prodcuts = require("./routes/products");
 const subCategories = require("./routes/subCategories");
@@ -22,7 +21,6 @@ app.use(
 const db = require("./models/");
 
 const URL = process.env.ROUTES_URL;
-app.use(`${URL}/auth/`, auth);
 app.use(`${URL}/categories/`, categories);
 app.use(`${URL}/products/`, prodcuts);
 app.use(`${URL}/subCategories/`, subCategories);
