@@ -7,11 +7,11 @@ exports.registerValidation = () => {
       .withMessage("name is required")
       .isLength({ min: 3 })
       .withMessage("name at least is 3 digits"),
-    body("passowrd")
+    body("password")
       .notEmpty()
-      .withMessage("passowrd is required")
+      .withMessage("password is required")
       .isLength({ min: 4 })
-      .withMessage("passowrd at least is 4 digits"),
+      .withMessage("password at least is 4 digits"),
     body("email").notEmpty().withMessage("email is required"),
     body("tel")
       .notEmpty()

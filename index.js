@@ -18,8 +18,6 @@ app.use(
   })
 );
 
-const db = require("./models/");
-
 const URL = process.env.ROUTES_URL;
 app.use(`${URL}/categories/`, categories);
 app.use(`${URL}/products/`, prodcuts);
