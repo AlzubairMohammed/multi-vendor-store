@@ -1,3 +1,4 @@
+const { registerValidation } = require("../validation/registerValidation");
 const router = require("express").Router();
 const {
   getUsers,
@@ -7,7 +8,7 @@ const {
 } = require("../controllers/users");
 
 router.get("/", getUsers);
-router.post("/register", register);
+router.post("/register", registerValidation(), register);
 router.put("/:id", updateUser);
 router.delete("/:id", deleteUser);
 

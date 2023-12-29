@@ -11,9 +11,15 @@ exports.getUsers = asyncWrapper(async (req, res, next) => {
   //   res.json;
 });
 
-exports.register = (req, res) => {
-  res.json({ msg: `user created` });
-};
+exports.register = asyncWrapper(async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const error = errorResponse.create(errors.array(), 400, httpStatus.FAIL);
+    return next(error);
+  }
+  const data = await User.create(req.body);
+  return res.json({ status: httpStatus.SUCCESS, data });
+});
 
 exports.login = (req, res) => {
   res.json({ msg: `user created` });

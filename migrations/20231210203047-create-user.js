@@ -18,22 +18,18 @@ module.exports = {
       password: {
         type: Sequelize.STRING,
       },
-      image: {
-        type: Sequelize.STRING,
-      },
       tel: {
-        type: Sequelize.STRING,
-      },
-      address: {
         type: Sequelize.STRING,
       },
       created_at: {
         allowNull: false,
         type: Sequelize.DATE,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
       },
       updated_at: {
         allowNull: false,
         type: Sequelize.DATE,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
       },
     });
   },
