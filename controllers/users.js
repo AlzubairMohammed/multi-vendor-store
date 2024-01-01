@@ -21,7 +21,12 @@ exports.register = asyncWrapper(async (req, res, next) => {
   return res.json({ status: httpStatus.SUCCESS, data });
 });
 
-exports.login = (req, res) => {
+exports.login = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const error = errorResponse.create(errors.array(), 400, httpStatus.FAIL);
+    next(error);
+  }
   res.json({ msg: `user created` });
 };
 

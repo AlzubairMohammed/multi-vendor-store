@@ -11,12 +11,22 @@ exports.registerValidation = () => {
       .notEmpty()
       .withMessage("password is required")
       .isLength({ min: 4 })
-      .withMessage("password at least is 4 digits"),
+      .withMessage("password at least 4 digits"),
     body("email").notEmpty().withMessage("email is required"),
     body("tel")
       .notEmpty()
       .withMessage("tel is required")
       .isLength({ min: 10 })
       .withMessage("phone number can't be less than 10"),
+  ];
+};
+exports.loginValidation = () => {
+  return [
+    body("email").notEmpty().withMessage("you must to send email"),
+    body("password")
+      .notEmpty()
+      .withMessage("you must to send password")
+      .isLength({ min: 4 })
+      .withMessage("password at least 4 digits"),
   ];
 };
