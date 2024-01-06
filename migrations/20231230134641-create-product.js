@@ -13,12 +13,8 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      price: {
+      base_price: {
         type: Sequelize.FLOAT,
-        allowNull: false,
-      },
-      qty: {
-        type: Sequelize.INTEGER,
         allowNull: false,
       },
       user_id: {
@@ -28,6 +24,8 @@ module.exports = {
           model: "users",
           key: "id",
         },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
       },
       sub_category_id: {
         type: Sequelize.INTEGER,
