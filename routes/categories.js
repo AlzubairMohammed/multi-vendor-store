@@ -1,35 +1,36 @@
-const router = require('express').Router();
+const router = require("express").Router();
+const { categoriesValidation } = require("../validation/categoriesValidation");
 const {
-    getCategories,
-    createCategory,
-    updateCategory,
-    deleteCategory,
-    getCategory
-} = require('../controllers/categories');
-const filesPayloadExists = require('../middleware/filesPayloadExists');
-const fileExtLimiter = require('../middleware/fileExtLimiter');
-const fileSizeLimiter = require('../middleware/fileSizeLimiter');
+  getCategories,
+  createCategory,
+  updateCategory,
+  deleteCategory,
+  getCategory,
+} = require("../controllers/categories");
+const filesPayloadExists = require("../middleware/filesPayloadExists");
+const fileExtLimiter = require("../middleware/fileExtLimiter");
+const fileSizeLimiter = require("../middleware/fileSizeLimiter");
 const fileUpload = require("express-fileupload");
 
-
-router.get('/', getCategories);
-router.get('/:id', getCategory);
+router.get("/", getCategories);
+router.get("/:id", getCategory);
 router.post(
-    '/',
-    fileUpload({ createParentPath: true }),
-    filesPayloadExists,
-    fileExtLimiter(['.png', '.jpg', '.jpeg']),
-    fileSizeLimiter,
-    createCategory
+  "/",
+  fileUpload({ createParentPath: true }),
+  filesPayloadExists,
+  fileExtLimiter([".png", ".jpg", ".jpeg"]),
+  fileSizeLimiter,
+  categoriesValidation(),
+  createCategory
 );
-router.put('/:id',
-fileUpload({ createParentPath: true }),
-filesPayloadExists,
-fileExtLimiter(['.png', '.jpg', '.jpeg']),
-fileSizeLimiter,
-updateCategory
+router.put(
+  "/:id",
+  fileUpload({ createParentPath: true }),
+  filesPayloadExists,
+  fileExtLimiter([".png", ".jpg", ".jpeg"]),
+  fileSizeLimiter,
+  updateCategory
 );
-router.delete('/:id', deleteCategory);
-
+router.delete("/:id", deleteCategory);
 
 module.exports = router;
