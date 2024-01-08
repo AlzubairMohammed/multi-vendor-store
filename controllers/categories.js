@@ -7,14 +7,13 @@ const httpStatus = require("../utils/httpStatus");
 const errorResponse = require("../utils/errorResponse");
 const { validationResult } = require("express-validator");
 
-// Get all catergories
 exports.getCategories = asyncWrapper(async (req, res) => {
   const data = await Category.findAll({
     include: ["SubCategories"],
   });
   res.json({ status: httpStatus.SUCCESS, data });
 });
-// Get single category
+
 exports.getCategory = asyncWrapper(async (req, res, next) => {
   const id = req.params.id;
   const data = await Category.findOne({
@@ -31,7 +30,7 @@ exports.getCategory = asyncWrapper(async (req, res, next) => {
   }
   return res.json({ status: httpStatus.SUCCESS, data });
 });
-// Create category
+
 exports.createCategory = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -51,7 +50,7 @@ exports.createCategory = async (req, res, next) => {
   const data = await Category.create(req.body);
   return res.json({ status: httpStatus.SUCCESS, data });
 };
-// Update category
+
 exports.updateCategory = asyncWrapper(async (req, res, next) => {
   const errors = validationResult(req);
   const id = req.params.id;
