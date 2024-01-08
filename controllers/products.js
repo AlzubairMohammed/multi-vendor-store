@@ -1,4 +1,4 @@
-const { Product, Image } = require("../models");
+const { Product, Image, ProductVariation } = require("../models");
 const path = require("path");
 const fs = require("fs");
 const ErrorResponse = require("../utils/errorResponse");
@@ -8,14 +8,22 @@ const { validationResult } = require("express-validator");
 let fileName;
 exports.getProducts = asyncWrapper(async (req, res) => {
   const data = await Product.findAll({
-    include: ["images"],
+    include: ["Images"],
+    attributes: {
+      exclude: ["product_id", "user_id"],
+    },
   });
   return res.json({ status: httpStatus.SUCCESS, data });
 });
 
-exports.getProduct = async (req, res, next) => {
+exports.getProduct = asyncWrapper(async (req, res, next) => {
   const id = req.params.id;
-  const data = await Product.findOne({ where: { id } });
+  const data = await Product.findOne({
+    where: { id },
+    attributes: {
+      exclude: ["product_id", "user_id"],
+    },
+  });
   if (!data) {
     const error = ErrorResponse.create(
       "product not found",
@@ -25,9 +33,10 @@ exports.getProduct = async (req, res, next) => {
     next(error);
   }
   return res.json({ status: httpStatus.SUCCESS, data });
-};
+});
 
-exports.createProdut = asyncWrapper(async (req, res, next) => {
+exports.createProduct = asyncWrapper(async (req, res, next) => {
+  // return res.json(req.body);
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const error = ErrorResponse.create(errors.array(), 400, httpStatus.FAIL);
@@ -45,9 +54,33 @@ exports.createProdut = asyncWrapper(async (req, res, next) => {
       }
     });
   });
-  const data = await Product.create(req.body);
-  const imageDate = Image.create({ image: fileName, product_id: data.id });
-  if (data && imageDate) {
+  const {
+    name,
+    base_price,
+    size,
+    color,
+    material,
+    stock_quantity,
+    stock_code,
+    price,
+  } = req.body;
+  console.log(name);
+  const data = await Product.create({ base_price, name });
+  const imageDate = await Image.create({
+    image: fileName,
+    product_id: data.id,
+  });
+  const productVariations = await ProductVariation.create({
+    size,
+    color,
+    material,
+    stock_quantity,
+    stock_code,
+    price,
+    product_id: data.id,
+  });
+  data.ProductVariations = productVariations;
+  if ((data && imageDate, productVariations)) {
     return res.json({ status: httpStatus.SUCCESS, data });
   }
 });
@@ -108,7 +141,7 @@ exports.updateProdcut = async (req, res, next) => {
   res.status(200).json("updated");
 };
 
-exports.deleteProduct = async (req, res, next) => {
+exports.deleteProduct = asyncWrapper(async (req, res, next) => {
   const id = req.params.id;
   const { image } = await Image.findOne({
     where: { product_id: id },
@@ -134,4 +167,4 @@ exports.deleteProduct = async (req, res, next) => {
   if (product && image) {
     res.json({ status: httpStatus.SUCCESS, data: `product deleted` });
   }
-};
+});

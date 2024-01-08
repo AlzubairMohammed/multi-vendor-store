@@ -26,10 +26,6 @@ app.use(`${URL}/products/`, prodcuts);
 app.use(`${URL}/subCategories/`, subCategories);
 app.use(`${URL}/users/`, users);
 
-//this just for test
-app.get("/", function (req, res) {
-  res.sendFile(path.resolve("dist/index.html"));
-});
 app.use(express.static("."));
 // global error handler
 app.use((error, req, res, next) => {

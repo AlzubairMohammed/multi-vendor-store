@@ -7,7 +7,7 @@ const { productsValidation } = require("../validation/productsValidation");
 const {
   getProducts,
   getProduct,
-  createProdut,
+  createProduct,
   updateProdcut,
   deleteProduct,
 } = require("../controllers/products");
@@ -21,7 +21,7 @@ router
     fileExtLimiter([".png", ".jpg", ".jpeg"]),
     fileSizeLimiter,
     productsValidation(),
-    createProdut
+    createProduct
   )
   .get("/:id", getProduct)
   .put(
