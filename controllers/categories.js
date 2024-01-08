@@ -15,16 +15,22 @@ exports.getCategories = asyncWrapper(async (req, res) => {
   res.json({ status: httpStatus.SUCCESS, data });
 });
 // Get single category
-exports.getCategory = async (req, res, next) => {
+exports.getCategory = asyncWrapper(async (req, res, next) => {
   const id = req.params.id;
-  const catgory = await Category.findOne({
+  const data = await Category.findOne({
     where: { id },
-    include: ["sub_sections"],
+    include: ["SubCategories"],
   });
-  catgory
-    ? res.status(200).json(catgory)
-    : res.status(404).json({ msg: "category not found" });
-};
+  if (!data) {
+    const error = ErrorResponse.create(
+      `Category with id = ${id} is not found`,
+      404,
+      httpStatus.FAIL
+    );
+    return next(error);
+  }
+  return res.json({ status: httpStatus.SUCCESS, data });
+});
 // Create category
 exports.createCategory = async (req, res, next) => {
   const errors = validationResult(req);
