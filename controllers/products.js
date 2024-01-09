@@ -46,7 +46,7 @@ exports.createProduct = asyncWrapper(async (req, res, next) => {
   let fileName = "";
   Object.keys(files).forEach((key) => {
     fileName = Date.now() + files[key].name + "";
-    const filepath = path.join(__dirname, "../uploads", fileName);
+    const filepath = path.join(__dirname, "../uploads/products", fileName);
     files[key].mv(filepath, (err) => {
       if (err) {
         const error = ErrorResponse.create(err, 500, httpStatus.FAIL);
