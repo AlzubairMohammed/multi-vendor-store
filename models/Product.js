@@ -4,7 +4,7 @@ module.exports = (sequelize, DataTypes) => {
   class Product extends Model {
     static associate(models) {
       Product.belongsTo(models.SubCategory, { foreignKey: "sub_category_id" });
-      // Product.belongsTo(models.User, { foreignKey: "user_id" });
+      Product.belongsTo(models.User, { foreignKey: "user_id" });
       Product.hasMany(models.Image, { foreignKey: "product_id" });
     }
   }
@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       name: DataTypes.STRING,
       base_price: DataTypes.FLOAT,
+      sub_category_id: DataTypes.INTEGER,
     },
     {
       sequelize,
