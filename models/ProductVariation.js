@@ -1,12 +1,12 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class Product extends Model {
+  class ProductVariation extends Model {
     static associate(models) {
-      Product.hasMany(models.Product, { foreignKey: "product_id" });
+      ProductVariation.belongsTo(models.Product, { foreignKey: "product_id" });
     }
   }
-  Product.init(
+  ProductVariation.init(
     {
       size: DataTypes.STRING,
       color: DataTypes.STRING,
@@ -22,5 +22,5 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: false,
     }
   );
-  return Product;
+  return ProductVariation;
 };

@@ -8,7 +8,7 @@ const { validationResult } = require("express-validator");
 let fileName;
 exports.getProducts = asyncWrapper(async (req, res) => {
   const data = await Product.findAll({
-    include: ["Images"],
+    include: ["Images", "ProductVariations"],
     attributes: {
       exclude: ["product_id", "user_id"],
     },
