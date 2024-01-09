@@ -18,7 +18,7 @@ router
     "/",
     fileUpload({ createParentPath: true }),
     filesPayloadExists,
-    fileExtLimiter([".png", ".jpg", ".jpeg"]),
+    // fileExtLimiter([".png", ".jpg", ".jpeg"]),
     fileSizeLimiter,
     productsValidation(),
     createProduct

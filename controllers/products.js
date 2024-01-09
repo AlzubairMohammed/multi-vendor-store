@@ -36,24 +36,15 @@ exports.getProduct = asyncWrapper(async (req, res, next) => {
 });
 
 exports.createProduct = asyncWrapper(async (req, res, next) => {
-  // return res.json(req.body);
+  // return res.json(req.files);
+  let imageDate = {};
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const error = ErrorResponse.create(errors.array(), 400, httpStatus.FAIL);
     return next(error);
   }
-  const { files } = req;
+  const { images } = req.files;
   let fileName = "";
-  Object.keys(files).forEach((key) => {
-    fileName = Date.now() + files[key].name + "";
-    const filepath = path.join(__dirname, "../uploads/products", fileName);
-    files[key].mv(filepath, (err) => {
-      if (err) {
-        const error = ErrorResponse.create(err, 500, httpStatus.FAIL);
-        return next(error);
-      }
-    });
-  });
   const {
     name,
     base_price,
@@ -66,10 +57,38 @@ exports.createProduct = asyncWrapper(async (req, res, next) => {
   } = req.body;
   console.log(name);
   const data = await Product.create({ base_price, name });
-  const imageDate = await Image.create({
-    image: fileName,
-    product_id: data.id,
-  });
+
+  if (Array.isArray(images)) {
+    images.map(async (image) => {
+      console.log("fromxxx");
+      fileName = Date.now() + image.name + "";
+      const filepath = path.join(__dirname, "../uploads/products", fileName);
+      image.mv(filepath, (err) => {
+        if (err) {
+          const error = ErrorResponse.create(err, 500, httpStatus.FAIL);
+          return next(error);
+        }
+      });
+      imageDate = await Image.create({
+        image: fileName,
+        product_id: data.id,
+      });
+    });
+  } else {
+    fileName = Date.now() + images.name + "";
+    const filepath = path.join(__dirname, "../uploads/products", fileName);
+    images.mv(filepath, (err) => {
+      if (err) {
+        const error = ErrorResponse.create(err, 500, httpStatus.FAIL);
+        return next(error);
+      }
+    });
+    imageDate = await Image.create({
+      image: fileName,
+      product_id: data.id,
+    });
+  }
+
   const productVariations = await ProductVariation.create({
     size,
     color,
