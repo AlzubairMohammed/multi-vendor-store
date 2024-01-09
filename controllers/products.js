@@ -7,11 +7,17 @@ const httpStatus = require("../utils/httpStatus");
 const { validationResult } = require("express-validator");
 let fileName;
 exports.getProducts = asyncWrapper(async (req, res) => {
+  let { limit, page } = req.query;
+  limit = +limit || 10;
+  page = +page || 1;
+  const offset = (page - 1) * limit;
   const data = await Product.findAll({
     include: ["Images", "ProductVariations"],
     attributes: {
       exclude: ["product_id", "user_id"],
     },
+    limit,
+    offset,
   });
   return res.json({ status: httpStatus.SUCCESS, data });
 });
@@ -61,7 +67,6 @@ exports.createProduct = asyncWrapper(async (req, res, next) => {
 
   if (Array.isArray(images)) {
     images.map(async (image) => {
-      console.log("fromxxx");
       fileName = Date.now() + image.name + "";
       const filepath = path.join(__dirname, "../uploads/products", fileName);
       image.mv(filepath, (err) => {
@@ -105,7 +110,7 @@ exports.createProduct = asyncWrapper(async (req, res, next) => {
   }
 });
 
-exports.updateProdcut = async (req, res, next) => {
+exports.updateProdcut = asyncWrapper(async (req, res, next) => {
   const id = req.params.id;
   const { files } = req;
   let undefinedError = {};
@@ -159,7 +164,7 @@ exports.updateProdcut = async (req, res, next) => {
     );
   }
   res.status(200).json("updated");
-};
+});
 
 exports.deleteProduct = asyncWrapper(async (req, res, next) => {
   const id = req.params.id;
