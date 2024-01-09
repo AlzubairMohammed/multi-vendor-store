@@ -23,6 +23,7 @@ exports.getProduct = asyncWrapper(async (req, res, next) => {
     attributes: {
       exclude: ["product_id", "user_id"],
     },
+    include: ["ProductVariations", "Images"],
   });
   if (!data) {
     const error = ErrorResponse.create(
