@@ -5,8 +5,13 @@ const errorResponse = require("../utils/errorResponse");
 const { validationResult } = require("express-validator");
 
 exports.getUsers = asyncWrapper(async (req, res, next) => {
+  const data = await User.findAll();
+  return res.json({ status: httpStatus.SUCCESS, data });
+});
+exports.getVendors = asyncWrapper(async (req, res, next) => {
   const data = await User.findAll({
     include: ["Products"],
+    where: { role: "ADMIN" },
   });
   return res.json({ status: httpStatus.SUCCESS, data });
 });
