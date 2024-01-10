@@ -4,20 +4,29 @@ exports.registerValidation = () => {
   return [
     body("name")
       .notEmpty()
-      .withMessage("name is required")
-      .isLength({ min: 3 })
-      .withMessage("name at least is 3 digits"),
+      .withMessage("Name cannot be empty")
+      .isString()
+      .withMessage("Name must be a string"),
     body("password")
       .notEmpty()
-      .withMessage("password is required")
+      .withMessage("Password cannot be empty")
+      .isString()
+      .withMessage("Password must be a string")
       .isLength({ min: 4 })
-      .withMessage("password at least 4 digits"),
-    body("email").notEmpty().withMessage("email is required"),
-    body("tel")
+      .withMessage("name at least is 4 digits"),
+    body("email")
       .notEmpty()
-      .withMessage("tel is required")
-      .isLength({ min: 10 })
-      .withMessage("phone number can't be less than 10"),
+      .withMessage("Email cannot be empty")
+      .isEmail()
+      .withMessage("Invalid email format"),
+    body("phone")
+      .notEmpty()
+      .withMessage("Phone cannot be empty")
+      .isString()
+      .withMessage("Phone must be a string"),
+    body("token").optional().isString().withMessage("Token must be a string"),
+    body("role").optional().isString().withMessage("Role must be a string"),
+    body("image").optional().isString().withMessage("Image must be a string"),
   ];
 };
 exports.loginValidation = () => {

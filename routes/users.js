@@ -1,4 +1,3 @@
-const filesPayloadExists = require("../middleware/filesPayloadExists");
 const fileExtLimiter = require("../middleware/fileExtLimiter");
 const fileSizeLimiter = require("../middleware/fileSizeLimiter");
 const fileUpload = require("express-fileupload");
@@ -14,7 +13,6 @@ const {
   deleteUser,
   login,
 } = require("../controllers/users");
-
 router.get("/", getUsers);
 router.post(
   "/register",
