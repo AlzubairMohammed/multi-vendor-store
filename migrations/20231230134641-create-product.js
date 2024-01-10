@@ -40,7 +40,7 @@ module.exports = {
         allowNull: false,
         defaultValue: 1,
         references: {
-          model: "SubCategories",
+          model: "subCategories",
           key: "id",
         },
         onUpdate: "CASCADE",
