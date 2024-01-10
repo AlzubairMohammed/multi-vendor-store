@@ -8,12 +8,14 @@ const {
 const router = require("express").Router();
 const {
   getUsers,
+  getVendors,
   register,
   updateUser,
   deleteUser,
   login,
 } = require("../controllers/users");
 router.get("/", getUsers);
+router.get("/vendors", getVendors);
 router.post(
   "/register",
   fileUpload({ createParentPath: true }),
