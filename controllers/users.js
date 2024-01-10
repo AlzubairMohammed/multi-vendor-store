@@ -15,6 +15,23 @@ exports.getVendors = asyncWrapper(async (req, res, next) => {
   });
   return res.json({ status: httpStatus.SUCCESS, data });
 });
+exports.getVendor = asyncWrapper(async (req, res, next) => {
+  const id = req.params.id;
+  const data = await User.findOne({
+    where: { id },
+    include: ["Products"],
+    where: { role: "ADMIN" },
+  });
+  if (!data) {
+    const error = errorResponse.create(
+      `Vendor with id = ${id} is not found`,
+      404,
+      httpStatus.FAIL
+    );
+    return next(error);
+  }
+  return res.json({ status: httpStatus.SUCCESS, data });
+});
 
 exports.register = asyncWrapper(async (req, res, next) => {
   const errors = validationResult(req);

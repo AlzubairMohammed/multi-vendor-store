@@ -12,20 +12,23 @@ const {
   register,
   updateUser,
   deleteUser,
+  getVendor,
   login,
 } = require("../controllers/users");
-router.get("/", getUsers);
-router.get("/vendors", getVendors);
-router.post(
-  "/register",
-  fileUpload({ createParentPath: true }),
-  fileExtLimiter([".png", ".jpg", ".jpeg"]),
-  fileSizeLimiter,
-  registerValidation(),
-  register
-);
-router.post("/login", loginValidation(), login);
-router.put("/:id", updateUser);
-router.delete("/:id", deleteUser);
+router
+  .get("/", getUsers)
+  .get("/vendors", getVendors)
+  .get("/vendors/:id", getVendor)
+  .post(
+    "/register",
+    fileUpload({ createParentPath: true }),
+    fileExtLimiter([".png", ".jpg", ".jpeg"]),
+    fileSizeLimiter,
+    registerValidation(),
+    register
+  )
+  .post("/login", loginValidation(), login)
+  .put("/:id", updateUser)
+  .delete("/:id", deleteUser);
 
 module.exports = router;
