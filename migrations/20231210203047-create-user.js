@@ -1,8 +1,9 @@
 "use strict";
+const userRoles = require("../utils/userRoles");
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("Users", {
+    await queryInterface.createTable("users", {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -22,9 +23,23 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      tel: {
+      phone: {
         type: Sequelize.STRING,
         allowNull: false,
+      },
+      image: {
+        type: Sequelize.STRING,
+        defaultValue: "uploads/profile.png",
+      },
+
+      token: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      role: {
+        type: Sequelize.ENUM(userRoles.USER, userRoles.ADMIN, userRoles.MANGER),
+        allowNull: false,
+        defaultValue: userRoles.USER,
       },
       created_at: {
         allowNull: false,
@@ -39,6 +54,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("Users");
+    await queryInterface.dropTable("users");
   },
 };

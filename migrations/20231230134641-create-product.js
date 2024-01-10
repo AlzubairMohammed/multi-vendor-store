@@ -3,6 +3,11 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable("products", {
+      product_id: {
+        allowNull: false,
+        type: Sequelize.INTEGER,
+        defaultValue: 1,
+      },
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -12,26 +17,28 @@ module.exports = {
       name: {
         type: Sequelize.STRING,
         allowNull: false,
+        defaultValue: "none",
       },
-      price: {
+      base_price: {
         type: Sequelize.FLOAT,
         allowNull: false,
-      },
-      qty: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
+        defaultValue: 1,
       },
       user_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
+        defaultValue: 1,
         references: {
           model: "users",
           key: "id",
         },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
       },
       sub_category_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
+        defaultValue: 1,
         references: {
           model: "subCategories",
           key: "id",

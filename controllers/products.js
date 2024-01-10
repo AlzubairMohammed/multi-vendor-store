@@ -1,4 +1,4 @@
-const { Product, Image } = require("../models");
+const { Product, Image, ProductVariation } = require("../models");
 const path = require("path");
 const fs = require("fs");
 const ErrorResponse = require("../utils/errorResponse");
@@ -7,15 +7,30 @@ const httpStatus = require("../utils/httpStatus");
 const { validationResult } = require("express-validator");
 let fileName;
 exports.getProducts = asyncWrapper(async (req, res) => {
+  let { limit, page } = req.query;
+  limit = +limit || 10;
+  page = +page || 1;
+  const offset = (page - 1) * limit;
   const data = await Product.findAll({
-    include: ["images"],
+    include: ["Images", "ProductVariations"],
+    attributes: {
+      exclude: ["product_id", "user_id"],
+    },
+    limit,
+    offset,
   });
   return res.json({ status: httpStatus.SUCCESS, data });
 });
 
-exports.getProduct = async (req, res, next) => {
+exports.getProduct = asyncWrapper(async (req, res, next) => {
   const id = req.params.id;
-  const data = await Product.findOne({ where: { id } });
+  const data = await Product.findOne({
+    where: { id },
+    attributes: {
+      exclude: ["product_id", "user_id"],
+    },
+    include: ["ProductVariations", "Images"],
+  });
   if (!data) {
     const error = ErrorResponse.create(
       "product not found",
@@ -25,34 +40,77 @@ exports.getProduct = async (req, res, next) => {
     next(error);
   }
   return res.json({ status: httpStatus.SUCCESS, data });
-};
+});
 
-exports.createProdut = asyncWrapper(async (req, res, next) => {
+exports.createProduct = asyncWrapper(async (req, res, next) => {
+  // return res.json(req.files);
+  let imageDate = {};
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const error = ErrorResponse.create(errors.array(), 400, httpStatus.FAIL);
     return next(error);
   }
-  const { files } = req;
+  const { images } = req.files;
   let fileName = "";
-  Object.keys(files).forEach((key) => {
-    fileName = Date.now() + files[key].name + "";
-    const filepath = path.join(__dirname, "../uploads", fileName);
-    files[key].mv(filepath, (err) => {
+  const {
+    name,
+    base_price,
+    size,
+    color,
+    material,
+    stock_quantity,
+    stock_code,
+    price,
+  } = req.body;
+  console.log(name);
+  const data = await Product.create({ base_price, name });
+
+  if (Array.isArray(images)) {
+    images.map(async (image) => {
+      fileName = Date.now() + image.name + "";
+      const filepath = path.join(__dirname, "../uploads/products", fileName);
+      image.mv(filepath, (err) => {
+        if (err) {
+          const error = ErrorResponse.create(err, 500, httpStatus.FAIL);
+          return next(error);
+        }
+      });
+      imageDate = await Image.create({
+        image: fileName,
+        product_id: data.id,
+      });
+    });
+  } else {
+    fileName = Date.now() + images.name + "";
+    const filepath = path.join(__dirname, "../uploads/products", fileName);
+    images.mv(filepath, (err) => {
       if (err) {
         const error = ErrorResponse.create(err, 500, httpStatus.FAIL);
         return next(error);
       }
     });
+    imageDate = await Image.create({
+      image: fileName,
+      product_id: data.id,
+    });
+  }
+
+  const productVariations = await ProductVariation.create({
+    size,
+    color,
+    material,
+    stock_quantity,
+    stock_code,
+    price,
+    product_id: data.id,
   });
-  const data = await Product.create(req.body);
-  const imageDate = Image.create({ image: fileName, product_id: data.id });
-  if (data && imageDate) {
+  data.ProductVariations = productVariations;
+  if ((data && imageDate, productVariations)) {
     return res.json({ status: httpStatus.SUCCESS, data });
   }
 });
 
-exports.updateProdcut = async (req, res, next) => {
+exports.updateProdcut = asyncWrapper(async (req, res, next) => {
   const id = req.params.id;
   const { files } = req;
   let undefinedError = {};
@@ -106,9 +164,9 @@ exports.updateProdcut = async (req, res, next) => {
     );
   }
   res.status(200).json("updated");
-};
+});
 
-exports.deleteProduct = async (req, res, next) => {
+exports.deleteProduct = asyncWrapper(async (req, res, next) => {
   const id = req.params.id;
   const { image } = await Image.findOne({
     where: { product_id: id },
@@ -134,4 +192,4 @@ exports.deleteProduct = async (req, res, next) => {
   if (product && image) {
     res.json({ status: httpStatus.SUCCESS, data: `product deleted` });
   }
-};
+});
