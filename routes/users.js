@@ -1,3 +1,7 @@
+const filesPayloadExists = require("../middleware/filesPayloadExists");
+const fileExtLimiter = require("../middleware/fileExtLimiter");
+const fileSizeLimiter = require("../middleware/fileSizeLimiter");
+const fileUpload = require("express-fileupload");
 const {
   registerValidation,
   loginValidation,
@@ -12,7 +16,14 @@ const {
 } = require("../controllers/users");
 
 router.get("/", getUsers);
-router.post("/register", registerValidation(), register);
+router.post(
+  "/register",
+  fileUpload({ createParentPath: true }),
+  fileExtLimiter([".png", ".jpg", ".jpeg"]),
+  fileSizeLimiter,
+  registerValidation(),
+  register
+);
 router.post("/login", loginValidation(), login);
 router.put("/:id", updateUser);
 router.delete("/:id", deleteUser);

@@ -6,12 +6,13 @@ const { validationResult } = require("express-validator");
 
 exports.getUsers = asyncWrapper(async (req, res, next) => {
   const data = User.findAll({
-    include: ["products"],
+    include: ["Products"],
   });
-  //   res.json;
+  res.json({ status: httpStatus.SUCCESS, data });
 });
 
 exports.register = asyncWrapper(async (req, res, next) => {
+  return res.json(req.body);
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const error = errorResponse.create(errors.array(), 400, httpStatus.FAIL);
