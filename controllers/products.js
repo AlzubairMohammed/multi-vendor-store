@@ -75,10 +75,15 @@ exports.createProduct = asyncWrapper(async (req, res, next) => {
           return next(error);
         }
       });
-      imageDate = await Image.create({
-        image: fileName,
-        product_id: data.id,
-      });
+      try {
+        imageDate = await Image.create({
+          image: fileName,
+          product_id: data.id,
+        });
+      } catch (err) {
+        const error = ErrorResponse.create(err, 500, httpStatus.FAIL);
+        return next(error);
+      }
     });
   } else {
     fileName = Date.now() + images.name + "";
