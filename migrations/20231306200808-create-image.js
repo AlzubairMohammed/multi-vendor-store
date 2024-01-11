@@ -20,6 +20,14 @@ module.exports = {
           key: "id",
         },
       },
+      product_variation_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: "productVariations",
+          key: "id",
+        },
+      },
       created_at: {
         allowNull: false,
         type: Sequelize.DATE,
