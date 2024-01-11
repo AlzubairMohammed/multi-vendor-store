@@ -74,10 +74,20 @@ exports.login = (req, res, next) => {
   res.json({ msg: `user created` });
 };
 
-exports.updateUser = (req, res) => {
+exports.editUser = (req, res) => {
   res.json({ msg: `user ${req.params.id} updated` });
 };
 
-exports.deleteUser = (req, res) => {
-  res.json({ msg: `user ${req.params.id}` });
-};
+exports.deleteUser = asyncWrapper(async (req, res, next) => {
+  const id = req.params.id;
+  const data = await User.destroy({ where: { id } });
+  if (!data) {
+    const error = ErrorResponse.create(
+      `User with id = ${id} is not found`,
+      404,
+      httpStatus.FAIL
+    );
+    return next(error);
+  }
+  return res.json({ status: httpStatus.SUCCESS, data: "User deleted" });
+});
