@@ -12,6 +12,7 @@ exports.getVendors = asyncWrapper(async (req, res, next) => {
   let { limit, page } = req.query;
   limit = +limit || 10;
   page = +page || 1;
+  const offset = (page - 1) * limit;
   const data = await User.findAll({
     include: [
       {
