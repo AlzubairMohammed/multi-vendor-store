@@ -1,4 +1,4 @@
-const { User } = require("../models");
+const { User, Product, Image, ProductVariation } = require("../models");
 const httpStatus = require("../utils/httpStatus");
 const asyncWrapper = require("../middleware/asyncWrapper");
 const errorResponse = require("../utils/errorResponse");
@@ -10,7 +10,23 @@ exports.getUsers = asyncWrapper(async (req, res, next) => {
 });
 exports.getVendors = asyncWrapper(async (req, res, next) => {
   const data = await User.findAll({
-    include: ["Products"],
+    include: [
+      {
+        model: Product,
+        limit,
+        offset,
+        include: [
+          {
+            model: ProductVariation,
+            include: [
+              {
+                model: Image,
+              },
+            ],
+          },
+        ],
+      },
+    ],
     where: { role: "ADMIN" },
   });
   return res.json({ status: httpStatus.SUCCESS, data });
