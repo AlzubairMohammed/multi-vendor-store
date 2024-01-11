@@ -23,7 +23,7 @@ router.post(
   register
 );
 router.post("/login", loginValidation(), login);
-router.put("/editUser/:id", editUser);
+router.put("/editUser/:id", registerValidation(), editUser);
 router.delete("/deleteUser/:id", deleteUser);
 
 module.exports = router;
