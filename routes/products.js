@@ -7,7 +7,7 @@ const { productsValidation } = require("../validation/productsValidation");
 const {
   getProducts,
   getProduct,
-  createProdut,
+  createProduct,
   updateProdcut,
   deleteProduct,
 } = require("../controllers/products");
@@ -16,12 +16,12 @@ router
   .get("/", getProducts)
   .post(
     "/",
-    // fileUpload({ createParentPath: true }),
-    // filesPayloadExists,
-    // fileExtLimiter(['.png', '.jpg', '.jpeg']),
-    // fileSizeLimiter,
+    fileUpload({ createParentPath: true }),
+    filesPayloadExists,
+    // fileExtLimiter([".png", ".jpg", ".jpeg"]),
+    fileSizeLimiter,
     productsValidation(),
-    createProdut
+    createProduct
   )
   .get("/:id", getProduct)
   .put(

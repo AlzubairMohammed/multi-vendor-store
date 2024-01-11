@@ -1,24 +1,28 @@
-const User = require('../models/User');
+const { User } = require("../models");
+const httpStatus = require("../utils/httpStatus");
+const asyncWrapper = require("../middleware/asyncWrapper");
+const errorResponse = require("../utils/errorResponse");
+const { validationResult } = require("express-validator");
 
-exports.getUsers = (req, res)=>{
-    User.findAll({
-        include:['products']
-    })
-    .then((result) => {
-        res.json(result)
-    }).catch((err) => {
-        console.log(err);
-    });
-}
+exports.getUsers = asyncWrapper(async (req, res, next) => {
+  const data = User.findAll({
+    include: ["products"],
+  });
+  //   res.json;
+});
 
-exports.createUser = (req, res)=>{
-    res.json({msg:`user created`});
-}
+exports.register = (req, res) => {
+  res.json({ msg: `user created` });
+};
 
-exports.updateUser = (req, res)=>{
-    res.json({msg:`user ${req.params.id} updated`})
-}
+exports.login = (req, res) => {
+  res.json({ msg: `user created` });
+};
 
-exports.deleteUser = (req, res)=>{
-    res.json({msg:`user ${req.params.id}`});
-}
+exports.updateUser = (req, res) => {
+  res.json({ msg: `user ${req.params.id} updated` });
+};
+
+exports.deleteUser = (req, res) => {
+  res.json({ msg: `user ${req.params.id}` });
+};

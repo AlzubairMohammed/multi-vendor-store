@@ -1,4 +1,4 @@
-const { Product, Image } = require("../models");
+const { Product, Image, ProductVariation } = require("../models");
 const path = require("path");
 const fs = require("fs");
 const ErrorResponse = require("../utils/errorResponse");
@@ -6,43 +6,111 @@ const asyncWrapper = require("../middleware/asyncWrapper");
 const httpStatus = require("../utils/httpStatus");
 const { validationResult } = require("express-validator");
 let fileName;
-// get all products function
-exports.getProducts = (req, res) => {
-  console.log(Product);
-  const data = Product.findAll({
-    include: ["images"],
-  })
-    .then((result) => {
-      res.json(result);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-  res.json(data);
-};
-// get single product function
-exports.getProduct = async (req, res) => {
+exports.getProducts = asyncWrapper(async (req, res) => {
+  let { limit, page } = req.query;
+  limit = +limit || 10;
+  page = +page || 1;
+  const offset = (page - 1) * limit;
+  const data = await Product.findAll({
+    include: ["Images", "ProductVariations"],
+    attributes: {
+      exclude: ["product_id", "user_id"],
+    },
+    limit,
+    offset,
+  });
+  return res.json({ status: httpStatus.SUCCESS, data });
+});
+
+exports.getProduct = asyncWrapper(async (req, res, next) => {
   const id = req.params.id;
-  const product = await Product.findOne({ where: { id }, include: ["images"] })
-    .then((result) => {
-      res.status(200).json(result);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-};
-// create product funtion
-exports.createProdut = asyncWrapper(async (req, res, next) => {
+  const data = await Product.findOne({
+    where: { id },
+    attributes: {
+      exclude: ["product_id", "user_id"],
+    },
+    include: ["ProductVariations", "Images"],
+  });
+  if (!data) {
+    const error = ErrorResponse.create(
+      "product not found",
+      404,
+      httpStatus.FAIL
+    );
+    next(error);
+  }
+  return res.json({ status: httpStatus.SUCCESS, data });
+});
+
+exports.createProduct = asyncWrapper(async (req, res, next) => {
+  // return res.json(req.files);
+  let imageDate = {};
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const error = ErrorResponse.create(errors.array(), 400, httpStatus.FAIL);
     return next(error);
   }
-  const data = await Product.create(req.body);
-  return res.json({ status: httpStatus.SUCCESS, data: data });
+  const { images } = req.files;
+  let fileName = "";
+  const {
+    name,
+    base_price,
+    size,
+    color,
+    material,
+    stock_quantity,
+    stock_code,
+    price,
+  } = req.body;
+  console.log(name);
+  const data = await Product.create({ base_price, name });
+
+  if (Array.isArray(images)) {
+    images.map(async (image) => {
+      fileName = Date.now() + image.name + "";
+      const filepath = path.join(__dirname, "../uploads/products", fileName);
+      image.mv(filepath, (err) => {
+        if (err) {
+          const error = ErrorResponse.create(err, 500, httpStatus.FAIL);
+          return next(error);
+        }
+      });
+      imageDate = await Image.create({
+        image: fileName,
+        product_id: data.id,
+      });
+    });
+  } else {
+    fileName = Date.now() + images.name + "";
+    const filepath = path.join(__dirname, "../uploads/products", fileName);
+    images.mv(filepath, (err) => {
+      if (err) {
+        const error = ErrorResponse.create(err, 500, httpStatus.FAIL);
+        return next(error);
+      }
+    });
+    imageDate = await Image.create({
+      image: fileName,
+      product_id: data.id,
+    });
+  }
+
+  const productVariations = await ProductVariation.create({
+    size,
+    color,
+    material,
+    stock_quantity,
+    stock_code,
+    price,
+    product_id: data.id,
+  });
+  data.ProductVariations = productVariations;
+  if ((data && imageDate, productVariations)) {
+    return res.json({ status: httpStatus.SUCCESS, data });
+  }
 });
-// update product function
-exports.updateProdcut = async (req, res, next) => {
+
+exports.updateProdcut = asyncWrapper(async (req, res, next) => {
   const id = req.params.id;
   const { files } = req;
   let undefinedError = {};
@@ -96,31 +164,32 @@ exports.updateProdcut = async (req, res, next) => {
     );
   }
   res.status(200).json("updated");
-};
-// delete product function
-exports.deleteProduct = async (req, res, next) => {
+});
+
+exports.deleteProduct = asyncWrapper(async (req, res, next) => {
   const id = req.params.id;
-  const newImage = await Image.findOne({
+  const { image } = await Image.findOne({
     where: { product_id: id },
   });
   // Delete old image form uploads directory
-  fs.unlinkSync(path.join(__dirname, `../uploads/${newImage.image}`));
+  fs.unlinkSync(path.join(__dirname, `../uploads/${image}`));
   Object.keys(files).forEach((key) => {
     fileName = Date.now() + files[key].name + "";
     const filepath = path.join(__dirname, "../uploads", fileName);
     files[key].mv(filepath, (err) => {
-      if (err) return res.status(500).json({ status: "error", message: err });
+      if (err) {
+        const error = ErrorResponse.create(err, 500, httpStatus.FAIL);
+        next(error);
+      }
     });
   });
-  const image = Image.destroy({
+  const imageData = Image.destroy({
     where: { product_id: id },
   });
   const product = await Product.destroy({
     where: { id },
   });
   if (product && image) {
-    res.json({ msg: `product deleted` });
-  } else {
-    return next(new ErrorResponse());
+    res.json({ status: httpStatus.SUCCESS, data: `product deleted` });
   }
-};
+});
