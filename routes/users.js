@@ -9,7 +9,7 @@ const router = require("express").Router();
 const {
   getUsers,
   register,
-  updateUser,
+  editUser,
   deleteUser,
   login,
 } = require("../controllers/users");
@@ -23,7 +23,7 @@ router.post(
   register
 );
 router.post("/login", loginValidation(), login);
-router.put("/:id", updateUser);
-router.delete("/:id", deleteUser);
+router.put("/editUser/:id", editUser);
+router.delete("/deleteUser/:id", deleteUser);
 
 module.exports = router;
