@@ -9,6 +9,9 @@ exports.getUsers = asyncWrapper(async (req, res, next) => {
   return res.json({ status: httpStatus.SUCCESS, data });
 });
 exports.getVendors = asyncWrapper(async (req, res, next) => {
+  let { limit, page } = req.query;
+  limit = +limit || 10;
+  page = +page || 1;
   const data = await User.findAll({
     include: [
       {
@@ -27,6 +30,8 @@ exports.getVendors = asyncWrapper(async (req, res, next) => {
         ],
       },
     ],
+    limit,
+    offset,
     where: { role: "ADMIN" },
   });
   return res.json({ status: httpStatus.SUCCESS, data });
