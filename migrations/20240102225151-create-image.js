@@ -20,6 +20,17 @@ module.exports = {
           key: "id",
         },
       },
+      product_variation_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: "productVariations",
+          key: "id",
+        },
+        defaultValue: 1,
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+      },
       created_at: {
         allowNull: false,
         type: Sequelize.DATE,
