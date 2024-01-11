@@ -3,7 +3,7 @@ const path = require("path");
 const fileExtLimiter = (allowedExtArray) => {
   return (req, res, next) => {
     const files = req.files;
-    files ?? next();
+    if (!files) return next();
     const fileExtensions = [];
     Object.keys(files).forEach((key) => {
       fileExtensions.push(path.extname(files[key].name));
