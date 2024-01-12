@@ -58,7 +58,7 @@ exports.getVendor = asyncWrapper(async (req, res, next) => {
 });
 
 exports.register = asyncWrapper(async (req, res, next) => {
-  const { email, password } = req.body;
+  const { email, password, role } = req.body;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const error = errorResponse.create(errors.array(), 400, httpStatus.FAIL);
@@ -77,6 +77,11 @@ exports.register = asyncWrapper(async (req, res, next) => {
     );
     return next(error);
   }
+  const token = await jwt({
+    email,
+    role,
+  });
+  req.body.token = token;
   req.body.password = await bcrypt.hash(password, 10);
   const data = await User.create(req.body);
   return res.json({ status: httpStatus.SUCCESS, data });
@@ -110,7 +115,6 @@ exports.login = asyncWrapper(async (req, res, next) => {
   if (user && matchedPassword) {
     const token = await jwt({
       email: user.email,
-      id: user.id,
       role: user.role,
     });
 
