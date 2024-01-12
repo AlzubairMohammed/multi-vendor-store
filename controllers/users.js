@@ -3,6 +3,8 @@ const httpStatus = require("../utils/httpStatus");
 const asyncWrapper = require("../middleware/asyncWrapper");
 const errorResponse = require("../utils/errorResponse");
 const { validationResult } = require("express-validator");
+const bcrypt = require("bcryptjs");
+const jwt = require("../utils/jwt");
 
 exports.getUsers = asyncWrapper(async (req, res, next) => {
   const data = await User.findAll();
@@ -56,23 +58,72 @@ exports.getVendor = asyncWrapper(async (req, res, next) => {
 });
 
 exports.register = asyncWrapper(async (req, res, next) => {
+  const { email, password } = req.body;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const error = errorResponse.create(errors.array(), 400, httpStatus.FAIL);
     return next(error);
   }
+  const oldUser = await User.findOne({
+    where: {
+      email,
+    },
+  });
+  if (oldUser) {
+    const error = errorResponse.create(
+      "user already exists",
+      400,
+      httpStatus.FAIL
+    );
+    return next(error);
+  }
+  req.body.password = await bcrypt.hash(password, 10);
   const data = await User.create(req.body);
   return res.json({ status: httpStatus.SUCCESS, data });
 });
 
-exports.login = (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    const error = errorResponse.create(errors.array(), 400, httpStatus.FAIL);
-    next(error);
+exports.login = asyncWrapper(async (req, res, next) => {
+  const { email, password } = req.body;
+
+  if (!email && !password) {
+    const error = errorResponse.create(
+      "email and password are required",
+      400,
+      httpStatus.FAIL
+    );
+    return next(error);
   }
-  res.json({ msg: `user created` });
-};
+
+  const user = await User.findOne({
+    where: {
+      email,
+    },
+  });
+
+  if (!user) {
+    const error = errorResponse.create("user not found", 400, httpStatus.FAIL);
+    return next(error);
+  }
+
+  const matchedPassword = await bcrypt.compare(password, user.password);
+
+  if (user && matchedPassword) {
+    const token = await jwt({
+      email: user.email,
+      id: user.id,
+      role: user.role,
+    });
+
+    return res.json({ status: httpStatus.SUCCESS, data: { token } });
+  } else {
+    const error = errorResponse.create(
+      "something wrong",
+      500,
+      httpStatus.ERROR
+    );
+    return next(error);
+  }
+});
 
 exports.editUser = asyncWrapper(async (req, res, next) => {
   const errors = validationResult(req);
