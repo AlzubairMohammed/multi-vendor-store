@@ -4,7 +4,7 @@ const asyncWrapper = require("../middleware/asyncWrapper");
 const errorResponse = require("../utils/errorResponse");
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+const jwt = require("../utils/jwt");
 
 exports.getUsers = asyncWrapper(async (req, res, next) => {
   const data = await User.findAll({
@@ -50,7 +50,11 @@ exports.login = asyncWrapper(async (req, res, next) => {
     return next(error);
   }
 
-  const user = await User.findOne({ email: email });
+  const user = await User.findOne({
+    where: {
+      email,
+    },
+  });
 
   if (!user) {
     const error = errorResponse.create("user not found", 400, httpStatus.FAIL);
@@ -60,11 +64,9 @@ exports.login = asyncWrapper(async (req, res, next) => {
   const matchedPassword = await bcrypt.compare(password, user.password);
 
   if (user && matchedPassword) {
-    // logged in successfully
-
-    const token = await generateJWT({
+    const token = await jwt({
       email: user.email,
-      id: user._id,
+      id: user.id,
       role: user.role,
     });
 
