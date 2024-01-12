@@ -1,9 +1,9 @@
-const appError = require("../utils/appError");
+const errorResponse = require("../utils/errorResponse");
 
 module.exports = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.currentUser.role)) {
-      return next(appError.create("this role is not authorized", 401));
+      return next(errorResponse.create("this role is not authorized", 401));
     }
     next();
   };

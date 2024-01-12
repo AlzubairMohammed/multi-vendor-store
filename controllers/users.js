@@ -118,7 +118,10 @@ exports.login = asyncWrapper(async (req, res, next) => {
       role: user.role,
     });
 
-    return res.json({ status: httpStatus.SUCCESS, data: { token } });
+    return res.json({
+      status: httpStatus.SUCCESS,
+      data: { auth_type: "Bearer", token },
+    });
   } else {
     const error = errorResponse.create(
       "something wrong",

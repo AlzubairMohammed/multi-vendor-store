@@ -2,6 +2,9 @@ const router = require("express").Router();
 const filesPayloadExists = require("../middleware/filesPayloadExists");
 const fileExtLimiter = require("../middleware/fileExtLimiter");
 const fileSizeLimiter = require("../middleware/fileSizeLimiter");
+const permissions = require("../middleware/permissions");
+const verifyToken = require("../middleware/verifyToken");
+const userRoles = require("../utils/userRoles");
 const fileUpload = require("express-fileupload");
 const { productsValidation } = require("../validation/productsValidation");
 const {
@@ -16,6 +19,8 @@ router
   .get("/", getProducts)
   .post(
     "/",
+    verifyToken,
+    permissions(userRoles.MANGER),
     fileUpload({ createParentPath: true }),
     filesPayloadExists,
     // fileExtLimiter([".png", ".jpg", ".jpeg"]),
