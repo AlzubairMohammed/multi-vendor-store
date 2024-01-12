@@ -1,4 +1,4 @@
-const { SubCategory } = require("../models");
+const { SubCategory, Product } = require("../models");
 const path = require("path");
 const fs = require("fs");
 let fileName;
@@ -7,13 +7,19 @@ const x = require("express-validator");
 const ErrorResponse = require("../utils/errorResponse");
 const asyncWrapper = require("../middleware/asyncWrapper");
 const httpStatus = require("../utils/httpStatus");
-
+//add pagination
 exports.getSubCategories = asyncWrapper(async (req, res, next) => {
+  let { limit, page } = req.query;
+  limit = +limit || 10;
+  page = +page || 1;
+  const offset = (page - 1) * limit;
   const data = await SubCategory.findAll({
-    include: ["Products"],
+    include: { model: Product, limit, offset },
     attributes: {
       exclude: ["product_id"],
     },
+    limit,
+    offset,
   });
   return res.json({ status: httpStatus.SUCCESS, data });
 });
