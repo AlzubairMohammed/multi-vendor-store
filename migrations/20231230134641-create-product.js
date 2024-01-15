@@ -29,7 +29,7 @@ module.exports = {
         allowNull: false,
         defaultValue: 1,
         references: {
-          model: "users",
+          model: "Users",
           key: "id",
         },
         onUpdate: "CASCADE",
@@ -40,7 +40,7 @@ module.exports = {
         allowNull: false,
         defaultValue: 1,
         references: {
-          model: "subCategories",
+          model: "SubCategories",
           key: "id",
         },
         onUpdate: "CASCADE",
