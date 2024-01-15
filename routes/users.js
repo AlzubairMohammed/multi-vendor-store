@@ -10,7 +10,7 @@ const {
   getUsers,
   getVendors,
   register,
-  updateUser,
+  editUser,
   deleteUser,
   getVendor,
   login,
@@ -28,7 +28,7 @@ router
     register
   )
   .post("/login", loginValidation(), login)
-  .put("/:id")
+  .put("/:id", editUser)
   .delete("/:id", deleteUser);
 
 module.exports = router;
