@@ -1,15 +1,15 @@
 const jwt = require("jsonwebtoken");
-const httpStatusText = require("../utils/httpStatusText");
-const appError = require("../utils/appError");
+const httpStatus = require("../utils/httpStatus");
+const errorResponse = require("../utils/errorResponse");
 
 const verifyToken = (req, res, next) => {
   const authHeader =
     req.headers["Authorization"] || req.headers["authorization"];
   if (!authHeader) {
-    const error = appError.create(
+    const error = errorResponse.create(
       "token is required",
       401,
-      httpStatusText.ERROR
+      httpStatus.ERROR
     );
     return next(error);
   }
@@ -20,7 +20,7 @@ const verifyToken = (req, res, next) => {
     req.currentUser = currentUser;
     next();
   } catch (err) {
-    const error = appError.create("invalid token", 401, httpStatusText.ERROR);
+    const error = errorResponse.create("invalid token", 401, httpStatus.ERROR);
     return next(error);
   }
 };
