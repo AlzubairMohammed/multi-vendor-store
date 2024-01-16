@@ -21,22 +21,11 @@ router
     "/",
     verifyToken,
     permissions(userRoles.MANGER),
-    fileUpload({ createParentPath: true }),
-    filesPayloadExists,
-    // fileExtLimiter([".png", ".jpg", ".jpeg"]),
-    fileSizeLimiter,
     productsValidation(),
     createProduct
   )
   .get("/:id", getProduct)
-  .put(
-    "/:id",
-    fileUpload({ createParentPath: true }),
-    filesPayloadExists,
-    fileExtLimiter([".png", ".jpg", ".jpeg"]),
-    fileSizeLimiter,
-    updateProdcut
-  )
+  .put("/:id", verifyToken, permissions(userRoles.MANGER), updateProdcut)
   .delete("/:id", deleteProduct);
 
 module.exports = router;

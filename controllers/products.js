@@ -12,7 +12,16 @@ exports.getProducts = asyncWrapper(async (req, res) => {
   page = +page || 1;
   const offset = (page - 1) * limit;
   const data = await Product.findAll({
-    include: ["Images", "ProductVariations"],
+    include: [
+      {
+        model: ProductVariation,
+        include: [
+          {
+            model: Image,
+          },
+        ],
+      },
+    ],
     attributes: {
       exclude: ["product_id", "user_id"],
     },
@@ -43,74 +52,15 @@ exports.getProduct = asyncWrapper(async (req, res, next) => {
 });
 
 exports.createProduct = asyncWrapper(async (req, res, next) => {
-  // return res.json(req.files);
   let imageDate = {};
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const error = ErrorResponse.create(errors.array(), 400, httpStatus.FAIL);
     return next(error);
   }
-  const { images } = req.files;
-  let fileName = "";
-  const {
-    name,
-    base_price,
-    size,
-    color,
-    material,
-    stock_quantity,
-    stock_code,
-    price,
-  } = req.body;
-  console.log(name);
+  const { name, base_price } = req.body;
   const data = await Product.create({ base_price, name });
-
-  if (Array.isArray(images)) {
-    images.map(async (image) => {
-      fileName = Date.now() + image.name + "";
-      const filepath = path.join(__dirname, "../uploads/products", fileName);
-      image.mv(filepath, (err) => {
-        if (err) {
-          const error = ErrorResponse.create(err, 500, httpStatus.FAIL);
-          return next(error);
-        }
-      });
-      try {
-        imageDate = await Image.create({
-          image: fileName,
-          product_id: data.id,
-        });
-      } catch (err) {
-        const error = ErrorResponse.create(err, 500, httpStatus.FAIL);
-        return next(error);
-      }
-    });
-  } else {
-    fileName = Date.now() + images.name + "";
-    const filepath = path.join(__dirname, "../uploads/products", fileName);
-    images.mv(filepath, (err) => {
-      if (err) {
-        const error = ErrorResponse.create(err, 500, httpStatus.FAIL);
-        return next(error);
-      }
-    });
-    imageDate = await Image.create({
-      image: fileName,
-      product_id: data.id,
-    });
-  }
-
-  const productVariations = await ProductVariation.create({
-    size,
-    color,
-    material,
-    stock_quantity,
-    stock_code,
-    price,
-    product_id: data.id,
-  });
-  data.ProductVariations = productVariations;
-  if ((data && imageDate, productVariations)) {
+  if (data && imageDate) {
     return res.json({ status: httpStatus.SUCCESS, data });
   }
 });
