@@ -4,6 +4,9 @@ module.exports = (sequelize, DataTypes) => {
   class ProductVariation extends Model {
     static associate(models) {
       ProductVariation.belongsTo(models.Product, { foreignKey: "product_id" });
+      ProductVariation.belongsTo(models.Attribute, {
+        foreignKey: "attribute_id",
+      });
       ProductVariation.hasMany(models.Image, {
         foreignKey: "product_variation_id",
       });
@@ -11,13 +14,9 @@ module.exports = (sequelize, DataTypes) => {
   }
   ProductVariation.init(
     {
-      size: DataTypes.STRING,
-      color: DataTypes.STRING,
-      material: DataTypes.STRING,
-      stock_quantity: DataTypes.INTEGER,
-      stock_code: DataTypes.INTEGER,
-      price: DataTypes.FLOAT,
       product_id: DataTypes.INTEGER,
+      attribute_id: DataTypes.INTEGER,
+      value: DataTypes.STRING,
     },
     {
       sequelize,

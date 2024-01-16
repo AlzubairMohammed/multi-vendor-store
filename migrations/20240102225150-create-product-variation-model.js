@@ -10,29 +10,18 @@ module.exports = {
         primaryKey: true,
         autoIncrement: true,
       },
-      size: {
-        type: Sequelize.STRING,
-        allowNull: true,
-      },
-      color: {
-        type: Sequelize.STRING,
-        allowNull: true,
-      },
-      material: {
-        type: Sequelize.STRING,
-        allowNull: true,
-      },
-      price: {
-        type: Sequelize.DECIMAL(10, 2),
-        allowNull: false,
-      },
-      stock_quantity: {
+      attribute_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
+        references: {
+          model: "Attributes",
+          key: "id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
       },
-      stock_code: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
+      value: {
+        type: Sequelize.STRING,
       },
       product_id: {
         type: Sequelize.INTEGER,
