@@ -7,7 +7,11 @@ const bcrypt = require("bcryptjs");
 const jwt = require("../utils/jwt");
 
 exports.getUsers = asyncWrapper(async (req, res, next) => {
-  const data = await User.findAll();
+  const data = await User.findAll({
+    attributes: {
+      exclude: ["password"],
+    },
+  });
   return res.json({ status: httpStatus.SUCCESS, data });
 });
 exports.getVendors = asyncWrapper(async (req, res, next) => {
@@ -36,6 +40,9 @@ exports.getVendors = asyncWrapper(async (req, res, next) => {
     limit,
     offset,
     where: { role: "ADMIN" },
+    attributes: {
+      exclude: ["password"],
+    },
   });
   return res.json({ status: httpStatus.SUCCESS, data });
 });
@@ -45,6 +52,9 @@ exports.getVendor = asyncWrapper(async (req, res, next) => {
     where: { id },
     include: ["Products"],
     where: { role: "ADMIN" },
+    attributes: {
+      exclude: ["password"],
+    },
   });
   if (!data) {
     const error = errorResponse.create(
@@ -71,7 +81,7 @@ exports.register = asyncWrapper(async (req, res, next) => {
   });
   if (oldUser) {
     const error = errorResponse.create(
-      "user already exists",
+      "User already exists",
       400,
       httpStatus.FAIL
     );
@@ -84,7 +94,10 @@ exports.register = asyncWrapper(async (req, res, next) => {
   req.body.token = token;
   req.body.password = await bcrypt.hash(password, 10);
   const data = await User.create(req.body);
-  return res.json({ status: httpStatus.SUCCESS, data });
+  return res.json({
+    status: httpStatus.SUCCESS,
+    data: "User created successfuly",
+  });
 });
 
 exports.login = asyncWrapper(async (req, res, next) => {
@@ -150,7 +163,7 @@ exports.editUser = asyncWrapper(async (req, res, next) => {
     );
     return next(error);
   }
-  res.json({ status: httpStatus.SUCCESS, data: "User updated" });
+  res.json({ status: httpStatus.SUCCESS, data: "User updated successfuly" });
 });
 
 exports.deleteUser = asyncWrapper(async (req, res, next) => {
