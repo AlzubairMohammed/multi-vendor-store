@@ -17,7 +17,7 @@ router.get("/:id", getVariation);
 router.post(
   "/",
   verifyToken,
-  permissions(userRoles.MANGER),
+  permissions(userRoles.ADMIN),
   fileUpload({ createParentPath: true }),
   filesPayloadExists,
   //fileExtLimiter([".png", ".jpg", ".jpeg"]),
@@ -28,7 +28,7 @@ router.post(
 router.put(
   "/:id",
   verifyToken,
-  permissions(userRoles.MANGER),
+  permissions(userRoles.ADMIN),
   fileUpload({ createParentPath: true }),
   filesPayloadExists,
   // fileExtLimiter([".png", ".jpg", ".jpeg"]),

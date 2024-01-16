@@ -20,12 +20,12 @@ router
   .post(
     "/",
     verifyToken,
-    permissions(userRoles.MANGER),
+    permissions(userRoles.ADMIN),
     productsValidation(),
     createProduct
   )
   .get("/:id", getProduct)
-  .put("/:id", verifyToken, permissions(userRoles.MANGER), updateProdcut)
+  .put("/:id", verifyToken, permissions(userRoles.ADMIN), updateProdcut)
   .delete("/:id", deleteProduct);
 
 module.exports = router;

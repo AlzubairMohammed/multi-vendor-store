@@ -38,7 +38,16 @@ exports.getProduct = asyncWrapper(async (req, res, next) => {
     attributes: {
       exclude: ["product_id", "user_id"],
     },
-    include: ["ProductVariations", "Images"],
+    include: [
+      {
+        model: ProductVariation,
+        include: [
+          {
+            model: Image,
+          },
+        ],
+      },
+    ],
   });
   if (!data) {
     const error = ErrorResponse.create(
@@ -58,8 +67,8 @@ exports.createProduct = asyncWrapper(async (req, res, next) => {
     const error = ErrorResponse.create(errors.array(), 400, httpStatus.FAIL);
     return next(error);
   }
-  const { name, base_price } = req.body;
-  const data = await Product.create({ base_price, name });
+  // const { name, base_price } = req.body;
+  const data = await Product.create(req.body);
   if (data && imageDate) {
     return res.json({ status: httpStatus.SUCCESS, data });
   }
