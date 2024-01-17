@@ -5,6 +5,8 @@ const ErrorResponse = require("../utils/errorResponse");
 const asyncWrapper = require("../middleware/asyncWrapper");
 const httpStatus = require("../utils/httpStatus");
 const { validationResult } = require("express-validator");
+const jwt = require("jsonwebtoken");
+
 let fileName;
 exports.getProducts = asyncWrapper(async (req, res) => {
   let { limit, page } = req.query;
@@ -61,13 +63,17 @@ exports.getProduct = asyncWrapper(async (req, res, next) => {
 });
 
 exports.createProduct = asyncWrapper(async (req, res, next) => {
+  const authHeader =
+    req.headers["Authorization"] || req.headers["authorization"];
+  const token = authHeader.split(" ")[1];
+  const currentUser = jwt.verify(token, process.env.JWT_SECRET_KEY);
   let imageDate = {};
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const error = ErrorResponse.create(errors.array(), 400, httpStatus.FAIL);
     return next(error);
   }
-  // const { name, base_price } = req.body;
+  req.body.user_id = currentUser.id;
   const data = await Product.create(req.body);
   if (data && imageDate) {
     return res.json({ status: httpStatus.SUCCESS, data });

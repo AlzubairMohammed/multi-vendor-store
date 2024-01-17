@@ -68,8 +68,8 @@ exports.getVendor = asyncWrapper(async (req, res, next) => {
 });
 
 exports.register = asyncWrapper(async (req, res, next) => {
-  const { email, password, role } = req.body;
   const errors = validationResult(req);
+  const { email, password } = req.body;
   if (!errors.isEmpty()) {
     const error = errorResponse.create(errors.array(), 400, httpStatus.FAIL);
     return next(error);
@@ -87,13 +87,14 @@ exports.register = asyncWrapper(async (req, res, next) => {
     );
     return next(error);
   }
-  const token = await jwt({
-    email,
-    role,
-  });
-  req.body.token = token;
   req.body.password = await bcrypt.hash(password, 10);
   const data = await User.create(req.body);
+  const token = await jwt({
+    email: data.email,
+    id: data.id,
+  });
+  data.token = token;
+  await data.save();
   return res.json({
     status: httpStatus.SUCCESS,
     data: "User created successfuly",
@@ -129,6 +130,7 @@ exports.login = asyncWrapper(async (req, res, next) => {
     const token = await jwt({
       email: user.email,
       role: user.role,
+      id: user.id,
     });
 
     return res.json({
