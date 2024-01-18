@@ -51,7 +51,6 @@ exports.getVendor = asyncWrapper(async (req, res, next) => {
   const data = await User.findOne({
     where: { id },
     include: ["Products"],
-    where: { role: "ADMIN" },
     attributes: {
       exclude: ["password"],
     },

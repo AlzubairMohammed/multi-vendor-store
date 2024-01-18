@@ -26,7 +26,14 @@ exports.getSubCategories = asyncWrapper(async (req, res, next) => {
 
 exports.getSubCategory = asyncWrapper(async (req, res, next) => {
   const id = req.params.id;
-  const data = await SubCategory.findOne({ where: { id } });
+  let { limit, page } = req.query;
+  limit = +limit || 10;
+  page = +page || 1;
+  const offset = (page - 1) * limit;
+  const data = await SubCategory.findOne({
+    where: { id },
+    include: { model: Product, limit, offset },
+  });
   if (!data) {
     const error = ErrorResponse.create(
       `subcategory with id = ${id} is not found`,
